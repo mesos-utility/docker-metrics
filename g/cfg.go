@@ -1,0 +1,91 @@
+package g
+
+import (
+	"encoding/json"
+	"github.com/toolkits/file"
+	"log"
+	"os"
+	"sync"
+)
+
+// agent http service config section
+type HttpConfig struct {
+	Enable bool   `json:"enable"`
+	Listen string `json:"listen"`
+}
+
+// transfer service config section
+type TransferConfig struct {
+	Enable   bool   `json:"enable"`
+	Addr     string `json:"addr"`
+	Interval int64  `json:"interval"`
+	Timeout  int    `json:"timeout"`
+}
+
+// docker daemon config section
+type DaemonConfig struct {
+	Enable   bool   `json:"enable"`
+	Addr     string `json:"addr"`
+	Certdir  string `json:"certdir"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// global config file
+type GlobalConfig struct {
+	Debug    bool            `json:"debug"`
+	Http     *HttpConfig     `json:"http"`
+	Transfer *TransferConfig `json:"transfer"`
+	Daemon   *DaemonConfig   `json:"daemon"`
+}
+
+var (
+	ConfigFile string
+	config     *GlobalConfig
+	configLock = new(sync.RWMutex)
+)
+
+func Config() *GlobalConfig {
+	configLock.RLock()
+	defer configLock.RUnlock()
+	return config
+}
+
+// parse config file.
+func ParseConfig(cfg string) {
+	if cfg == "" {
+		log.Fatalln("use -c to specify configuration file")
+	}
+
+	if !file.IsExist(cfg) {
+		log.Fatalln("config file:", cfg, "is not existent. maybe you need `mv cfg.example.json cfg.json`")
+	}
+
+	ConfigFile = cfg
+
+	configContent, err := file.ToTrimString(cfg)
+	if err != nil {
+		log.Fatalln("read config file:", cfg, "fail:", err)
+	}
+
+	var c GlobalConfig
+	err = json.Unmarshal([]byte(configContent), &c)
+	if err != nil {
+		log.Fatalln("parse config file:", cfg, "fail:", err)
+	}
+
+	configLock.Lock()
+	defer configLock.Unlock()
+	config = &c
+
+	log.Println("g:ParseConfig, ok, ", cfg)
+}
+
+// get hostname
+func Hostname() (string, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Println("ERROR: os.Hostname() fail", err)
+	}
+	return hostname, err
+}

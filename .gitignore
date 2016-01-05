@@ -1,0 +1,9 @@
+# bin
+docker-metrics
+
+# logs
+var/*
+
+# cfg file
+cfg.json
+g/git.go
