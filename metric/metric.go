@@ -3,12 +3,12 @@ package metric
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
+	"github.com/golang/glog"
 )
 
 func SetGlobalSetting(client DockerClient, timeout, force time.Duration, vlanPrefix, defaultVlan string) {
@@ -28,7 +28,7 @@ func CreateMetric(step time.Duration, client Remote, tag string, endpoint string
 func (self *Metric) InitMetric(cid string, pid int) (err error) {
 	if self.statFile, err = os.Open(fmt.Sprintf("/proc/%d/net/dev", pid)); err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("exit")
+			glog.Warningf("container id: %s exited.", cid)
 			DeleteContainerMetricMapKey(cid)
 			self.Exit()
 		}
@@ -61,7 +61,7 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	opt := docker.StatsOptions{cid, statsChan, false, doneChan, gset.timeout * time.Second}
 	go func() {
 		if err := gset.client.Stats(opt); err != nil {
-			log.Println("Get stats failed", cid[:12], err)
+			glog.Warningf("Get stats failed", cid[:12], err)
 		}
 	}()
 
@@ -124,7 +124,7 @@ func (self *Metric) Send(rate map[string]float64) error {
 
 func isExists(file string) (ret bool, err error) {
 	// equivalent to Python's `if not os.path.exists(filename)`
-	if _, err := os.Stat(file); os.IsNotExist(err) {
+	if _, err := os.Stat(file); err != nil {
 		return false, err
 	} else {
 		return true, nil

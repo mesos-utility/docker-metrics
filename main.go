@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
+	"github.com/golang/glog"
+	"github.com/mesos-utility/docker-metrics/dockerclient"
 	"github.com/mesos-utility/docker-metrics/falcon"
 	"github.com/mesos-utility/docker-metrics/g"
 	"github.com/mesos-utility/docker-metrics/metric"
@@ -20,13 +21,12 @@ func handleVersion(displayVersion bool) {
 	}
 }
 
-func main() {
-	var dockerAddr string
-	var transferAddr string
-	//var certDir string
+var cfg = flag.String("c", "cfg.json", "configuration file")
+var version = flag.Bool("version", false, "show version")
 
-	cfg := flag.String("c", "cfg.json", "configuration file")
-	version := flag.Bool("v", false, "show version")
+func main() {
+	var transferAddr string
+	defer glog.Flush()
 	flag.Parse()
 
 	handleVersion(*version)
@@ -35,17 +35,10 @@ func main() {
 	g.ParseConfig(*cfg)
 
 	metric.InitContainerMetricMap()
-
-	dockerAddr = g.Config().Daemon.Addr
 	transferAddr = g.Config().Transfer.Addr
-
-	//cert := fmt.Sprintf("%s/cert.pem", certDir)
-	//key := fmt.Sprintf("%s/key.pem", certDir)
-	//ca := fmt.Sprintf("%s/ca.pem", certDir)
-	//dockerclient, err := docker.NewTLSClient(dockerAddr, cert, key, ca)
-	dockerclient, err := docker.NewClient(dockerAddr)
+	dockerclient, err := dockerclient.NewDockerClient()
 	if err != nil {
-		fmt.Println(err)
+		glog.Errorf("%v", err)
 		return
 	}
 
@@ -53,11 +46,10 @@ func main() {
 	client := falcon.CreateFalconClient(transferAddr, 5*time.Millisecond)
 
 	if containers, err := dockerclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
-		fmt.Println("get container error: ", err)
+		glog.Errorf("Get container error: %v", err)
 		os.Exit(1)
 	} else {
 		for _, container := range containers {
-			//fmt.Println("ID: ", container.ID)
 			hostname, _ := g.Hostname()
 			shortID := container.ID[:g.IDLEN]
 			tag := fmt.Sprintf("app=yks-web,id=%s", shortID)
@@ -65,24 +57,22 @@ func main() {
 			metric.AddContainerMetric(container.ID, m)
 
 			if c, err := dockerclient.InspectContainer(container.ID); err != nil {
-				fmt.Println(container.ID, err)
+				glog.Warningf("%s: %v", container.ID, err)
 			} else {
 				go watcher(m, c.ID, c.State.Pid)
 			}
 		}
 	}
-	//fmt.Printf("%v\n", containerMetricMap)
 
 	for {
 	REST:
 		time.Sleep(time.Duration(g.Interval/2) * time.Second)
 		if containers, err := dockerclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
-			fmt.Println("get container error: ", err)
+			glog.Errorf("Get container error: %v", err)
 			goto REST
 		} else {
 			for _, container := range containers {
 				if _, ok := metric.ContainerMetricMap()[container.ID]; ok {
-					//fmt.Println(container.ID)
 					continue
 				} else {
 					fmt.Println("Add ID: ", container.ID)
@@ -93,7 +83,7 @@ func main() {
 					metric.AddContainerMetric(container.ID, m)
 
 					if c, err := dockerclient.InspectContainer(container.ID); err != nil {
-						fmt.Println(container.ID, err)
+						glog.Warningf("%s: %v", container.ID, err)
 					} else {
 						go watcher(m, c.ID, c.State.Pid)
 					}
@@ -106,27 +96,29 @@ func main() {
 func watcher(serv metric.Metric, cid string, pid int) {
 	defer serv.Client.Close()
 	if err := serv.InitMetric(cid, pid); err != nil {
-		fmt.Println("failed", err)
+		glog.Warningf("Fail InitMetric %s: %v", cid, err)
 		return
 	}
 
 	t := time.NewTicker(serv.Step)
+	debug := g.Config().Debug
 	defer t.Stop()
-	fmt.Println("begin watch", cid)
+	//fmt.Println("begin watch", cid)
 	for {
 		select {
 		case now := <-t.C:
 			go func() {
 				if info, err := serv.UpdateStats(cid, pid); err == nil {
-					log.Println("updatestats:", cid)
-					//fmt.Println(info)
+					if debug {
+						glog.Infof("updatestats: %v", cid)
+					}
 					rate := serv.CalcRate(info, now)
 					serv.SaveLast(info)
 					// for safe
 					//fmt.Println(rate)
 					go serv.Send(rate)
 				} else {
-					log.Println(err)
+					glog.Errorf("%v", err)
 				}
 			}()
 		case <-serv.Stop:

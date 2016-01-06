@@ -2,10 +2,11 @@ package g
 
 import (
 	"encoding/json"
-	"github.com/toolkits/file"
-	"log"
 	"os"
 	"sync"
+
+	"github.com/golang/glog"
+	"github.com/toolkits/file"
 )
 
 // agent http service config section
@@ -26,7 +27,7 @@ type TransferConfig struct {
 type DaemonConfig struct {
 	Enable   bool   `json:"enable"`
 	Addr     string `json:"addr"`
-	Certdir  string `json:"certdir"`
+	CertDir  string `json:"certdir"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -54,38 +55,38 @@ func Config() *GlobalConfig {
 // parse config file.
 func ParseConfig(cfg string) {
 	if cfg == "" {
-		log.Fatalln("use -c to specify configuration file")
+		glog.Fatalln("use -c to specify configuration file")
 	}
 
 	if !file.IsExist(cfg) {
-		log.Fatalln("config file:", cfg, "is not existent. maybe you need `mv cfg.example.json cfg.json`")
+		glog.Fatalln("config file:", cfg, "is not existent. maybe you need `mv cfg.example.json cfg.json`")
 	}
 
 	ConfigFile = cfg
 
 	configContent, err := file.ToTrimString(cfg)
 	if err != nil {
-		log.Fatalln("read config file:", cfg, "fail:", err)
+		glog.Fatalln("read config file:", cfg, "fail:", err)
 	}
 
 	var c GlobalConfig
 	err = json.Unmarshal([]byte(configContent), &c)
 	if err != nil {
-		log.Fatalln("parse config file:", cfg, "fail:", err)
+		glog.Fatalln("parse config file:", cfg, "fail:", err)
 	}
 
 	configLock.Lock()
 	defer configLock.Unlock()
 	config = &c
 
-	log.Println("g:ParseConfig, ok, ", cfg)
+	glog.Infoln("g:ParseConfig, ok, ", cfg)
 }
 
 // get hostname
 func Hostname() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		log.Println("ERROR: os.Hostname() fail", err)
+		glog.Warningf("ERROR: os.Hostname() fail", err)
 	}
 	return hostname, err
 }

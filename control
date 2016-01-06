@@ -7,6 +7,7 @@ app=$module
 conf=cfg.json
 pidfile=var/app.pid
 logfile=var/app.log
+logdir=var/
 
 mkdir -p var &>/dev/null
 
@@ -26,22 +27,22 @@ EOF
         exit $sc
     else
         echo -n "build ok, vsn=" 
-        ./$app -v 
+        ./$app -version
     fi
 }
 
 function pack() {
     build
     git log -1 --pretty=%h > gitversion
-    version=`./$app -v`
-    tar zcvf $app-$version.tar.gz control $app cfg.example.json gitversion ./test/debug
+    version=`./$app -version`
+    tar zcvf $app-$version.tar.gz control $app cfg.example.json gitversion
     rm -f gitversion &>/dev/null
 }
 
 function packbin() {
     build
     git log -1 --pretty=%h > gitversion
-    version=`./$app -v`
+    version=`./$app -version`
     tar zcvf $app-bin-$version.tar.gz $app gitversion
     rm -f gitversion &>/dev/null
 }
@@ -56,7 +57,7 @@ function start() {
         return 1
     fi
 
-    nohup ./$app -c $conf &> $logfile &
+    nohup ./$app -c $conf -log_dir $logdir &> $logfile &
     echo $! > $pidfile
     echo "start ok, pid=$!"
 }
@@ -86,7 +87,7 @@ function status() {
 }
 
 function version() {
-    ./$app -vg
+    ./$app -version
 }
 
 function tailf() {

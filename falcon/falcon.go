@@ -1,12 +1,13 @@
 package falcon
 
 import (
-	"log"
 	"math"
 	"net/rpc"
 	"sync"
 	"time"
 
+	"github.com/golang/glog"
+	"github.com/mesos-utility/docker-metrics/g"
 	"github.com/open-falcon/common/model"
 	"github.com/toolkits/net"
 )
@@ -51,7 +52,7 @@ func (self *FalconClient) insureConn() error {
 			return nil
 		}
 
-		log.Println("Metrics rpc dial fail", err)
+		glog.Warningf("Metrics rpc dial fail %s", err)
 		if retry > 5 {
 			return err
 		}
@@ -81,7 +82,7 @@ func (self *FalconClient) call(method string, args interface{}, reply interface{
 
 	select {
 	case <-time.After(timeout):
-		log.Println("Metrics rpc call timeout", self.rpcClient, self.RpcServer)
+		glog.Warningf("Metrics rpc call timeout %s %s", self.rpcClient, self.RpcServer)
 		self.Close()
 	case err := <-done:
 		if err != nil {
@@ -113,6 +114,9 @@ func (self *FalconClient) Send(data map[string]float64, endpoint, tag string, ti
 	if err := self.call("Transfer.Update", metrics, &resp); err != nil {
 		return err
 	}
-	//log.Println(endpoint, timestamp, &resp)
+
+	if g.Config().Debug {
+		glog.Infof("%s: %v %v", endpoint, timestamp, &resp)
+	}
 	return nil
 }
