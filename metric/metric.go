@@ -35,7 +35,7 @@ func (self *Metric) InitMetric(cid string, pid int) (err error) {
 		return
 	}
 	var info map[string]uint64
-	if info, err = self.UpdateStats(cid); err == nil {
+	if info, err = self.UpdateStats(cid, pid); err == nil {
 		self.Last = time.Now()
 		self.SaveLast(info)
 	}
@@ -48,10 +48,16 @@ func (self *Metric) Exit() {
 	close(self.Stop)
 }
 
-func (self *Metric) UpdateStats(cid string) (map[string]uint64, error) {
+func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) {
 	info := map[string]uint64{}
 	statsChan := make(chan *docker.Stats)
 	doneChan := make(chan bool)
+
+	if ok, _ := isExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
+		DeleteContainerMetricMapKey(cid)
+		self.Exit()
+	}
+
 	opt := docker.StatsOptions{cid, statsChan, false, doneChan, gset.timeout * time.Second}
 	go func() {
 		if err := gset.client.Stats(opt); err != nil {
@@ -114,4 +120,13 @@ func (self *Metric) Send(rate map[string]float64) error {
 	step := int64(self.Step.Seconds())
 	timestamp := self.Last.Unix()
 	return self.Client.Send(rate, self.Endpoint, self.Tag, timestamp, step)
+}
+
+func isExists(file string) (ret bool, err error) {
+	// equivalent to Python's `if not os.path.exists(filename)`
+	if _, err := os.Stat(file); os.IsNotExist(err) {
+		return false, err
+	} else {
+		return true, nil
+	}
 }

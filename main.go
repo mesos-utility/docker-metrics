@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -22,7 +23,6 @@ func handleVersion(displayVersion bool) {
 func main() {
 	var dockerAddr string
 	var transferAddr string
-	//var containerMetricMap = make(map[string]metric.Metric)
 	//var certDir string
 
 	cfg := flag.String("c", "cfg.json", "configuration file")
@@ -63,18 +63,15 @@ func main() {
 			tag := fmt.Sprintf("app=yks-web,id=%s", shortID)
 			m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tag, hostname)
 			metric.AddContainerMetric(container.ID, m)
+
+			if c, err := dockerclient.InspectContainer(container.ID); err != nil {
+				fmt.Println(container.ID, err)
+			} else {
+				go watcher(m, c.ID, c.State.Pid)
+			}
 		}
 	}
 	//fmt.Printf("%v\n", containerMetricMap)
-
-	for key, value := range metric.ContainerMetricMap() {
-		if c, err := dockerclient.InspectContainer(key); err != nil {
-			fmt.Println(key, err)
-			continue
-		} else {
-			go watcher(value, c.ID, c.State.Pid)
-		}
-	}
 
 	for {
 	REST:
@@ -84,17 +81,22 @@ func main() {
 			goto REST
 		} else {
 			for _, container := range containers {
-				//fmt.Println(container.ID)
 				if _, ok := metric.ContainerMetricMap()[container.ID]; ok {
+					//fmt.Println(container.ID)
 					continue
 				} else {
 					fmt.Println("Add ID: ", container.ID)
 					hostname, _ := g.Hostname()
 					shortID := container.ID[:g.IDLEN]
 					tag := fmt.Sprintf("app=yks-web,id=%s", shortID)
-					//m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tag, fmt.Sprintf("%s_%s", hostname, shortID))
 					m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tag, hostname)
 					metric.AddContainerMetric(container.ID, m)
+
+					if c, err := dockerclient.InspectContainer(container.ID); err != nil {
+						fmt.Println(container.ID, err)
+					} else {
+						go watcher(m, c.ID, c.State.Pid)
+					}
 				}
 			}
 		}
@@ -115,13 +117,16 @@ func watcher(serv metric.Metric, cid string, pid int) {
 		select {
 		case now := <-t.C:
 			go func() {
-				if info, err := serv.UpdateStats(cid); err == nil {
+				if info, err := serv.UpdateStats(cid, pid); err == nil {
+					log.Println("updatestats:", cid)
 					//fmt.Println(info)
 					rate := serv.CalcRate(info, now)
 					serv.SaveLast(info)
 					// for safe
 					//fmt.Println(rate)
 					go serv.Send(rate)
+				} else {
+					log.Println(err)
 				}
 			}()
 		case <-serv.Stop:
