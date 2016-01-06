@@ -3,7 +3,6 @@ package dockerclient
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"github.com/fsouza/go-dockerclient"
@@ -49,7 +48,7 @@ func checkCertFiles(dir string, files []string) (ret bool, err error) {
 	}
 
 	for _, file := range files {
-		ret, err = isExists(fmt.Sprintf("%s/%s", dir, file))
+		ret, err = g.IsExists(fmt.Sprintf("%s/%s", dir, file))
 
 		if err != nil {
 			return ret, err
@@ -57,13 +56,4 @@ func checkCertFiles(dir string, files []string) (ret bool, err error) {
 	}
 
 	return true, nil
-}
-
-// check file exists or not.
-func isExists(file string) (ret bool, err error) {
-	if _, err := os.Stat(file); err != nil {
-		return false, err
-	} else {
-		return true, nil
-	}
 }

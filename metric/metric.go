@@ -9,6 +9,7 @@ import (
 
 	"github.com/fsouza/go-dockerclient"
 	"github.com/golang/glog"
+	"github.com/mesos-utility/docker-metrics/g"
 )
 
 func SetGlobalSetting(client DockerClient, timeout, force time.Duration, vlanPrefix, defaultVlan string) {
@@ -53,7 +54,7 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	statsChan := make(chan *docker.Stats)
 	doneChan := make(chan bool)
 
-	if ok, _ := isExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
+	if ok, _ := g.IsExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
 		DeleteContainerMetricMapKey(cid)
 		self.Exit()
 	}
@@ -120,13 +121,4 @@ func (self *Metric) Send(rate map[string]float64) error {
 	step := int64(self.Step.Seconds())
 	timestamp := self.Last.Unix()
 	return self.Client.Send(rate, self.Endpoint, self.Tag, timestamp, step)
-}
-
-func isExists(file string) (ret bool, err error) {
-	// equivalent to Python's `if not os.path.exists(filename)`
-	if _, err := os.Stat(file); err != nil {
-		return false, err
-	} else {
-		return true, nil
-	}
 }

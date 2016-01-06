@@ -15,13 +15,6 @@ import (
 	"github.com/mesos-utility/docker-metrics/watcher"
 )
 
-func handleVersion(displayVersion bool) {
-	if displayVersion {
-		fmt.Println(g.VERSION)
-		os.Exit(0)
-	}
-}
-
 var cfg = flag.String("c", "cfg.json", "configuration file")
 var version = flag.Bool("version", false, "show version")
 
@@ -30,7 +23,7 @@ func main() {
 	defer glog.Flush()
 	flag.Parse()
 
-	handleVersion(*version)
+	g.HandleVersion(*version)
 
 	// global config
 	g.ParseConfig(*cfg)
