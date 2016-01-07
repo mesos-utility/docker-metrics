@@ -79,14 +79,15 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 		return info, errors.New(errmsg)
 	}
 
-	info["cpu_user"] = stats.CPUStats.CPUUsage.UsageInUsermode
-	info["cpu_system"] = stats.CPUStats.CPUUsage.UsageInKernelmode
-	info["cpu_usage"] = stats.CPUStats.CPUUsage.TotalUsage
+	info["cpu.user"] = stats.CPUStats.CPUUsage.UsageInUsermode
+	info["cpu.system"] = stats.CPUStats.CPUUsage.UsageInKernelmode
+	info["cpu.usage"] = stats.CPUStats.CPUUsage.TotalUsage
 	//FIXME in container it will get all CPUStats
-	info["mem_usage"] = stats.MemoryStats.Usage
-	info["mem_max_usage"] = stats.MemoryStats.MaxUsage
-	info["mem_rss"] = stats.MemoryStats.Stats.Rss
+	info["mem.usage"] = stats.MemoryStats.Usage
+	info["mem.max_usage"] = stats.MemoryStats.MaxUsage
+	info["mem.rss"] = stats.MemoryStats.Stats.Rss
 
+	// fixme use docker api network data.
 	if err := self.getNetStats(info); err != nil {
 		return info, err
 	}
