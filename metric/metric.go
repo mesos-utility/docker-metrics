@@ -62,7 +62,7 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	opt := docker.StatsOptions{cid, statsChan, false, doneChan, gset.timeout * time.Second}
 	go func() {
 		if err := gset.client.Stats(opt); err != nil {
-			glog.Warningf("Get stats failed", cid[:12], err)
+			glog.Warningf("Get stats failed %s: %v", cid[:12], err)
 		}
 	}()
 
@@ -70,11 +70,13 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	select {
 	case stats = <-statsChan:
 		if stats == nil {
-			return info, errors.New("Get stats failed")
+			errmsg := fmt.Sprintf("Get stats failed: %s", cid[:12])
+			return info, errors.New(errmsg)
 		}
 	case <-time.After(gset.force * time.Second):
 		doneChan <- true
-		return info, errors.New("Get stats timeout")
+		errmsg := fmt.Sprintf("Get stats timeout: %s", cid[:12])
+		return info, errors.New(errmsg)
 	}
 
 	info["cpu_user"] = stats.CPUStats.CPUUsage.UsageInUsermode

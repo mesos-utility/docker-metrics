@@ -86,7 +86,7 @@ func ParseConfig(cfg string) {
 func Hostname() (string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		glog.Warningf("ERROR: os.Hostname() fail", err)
+		glog.Warningf("ERROR: os.Hostname() fail %v", err)
 	}
 	return hostname, err
 }
