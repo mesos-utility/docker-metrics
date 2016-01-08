@@ -50,7 +50,8 @@ func main() {
 
 	for {
 	REST:
-		time.Sleep(time.Duration(g.Interval/2) * time.Second)
+		interval := g.Config().Daemon.Interval / 2
+		time.Sleep(time.Duration(interval) * time.Second)
 		if containers, err := dclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
 			glog.Errorf("Get container error: %v", err)
 			goto REST

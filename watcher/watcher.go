@@ -20,7 +20,8 @@ func AddContainerWatched(dclient *docker.Client, container docker.APIContainers,
 		shortID := container.ID[:g.IDLEN]
 		tag := getTagFromContainer(c)
 		tags := fmt.Sprintf("%s,id=%s", tag, shortID)
-		m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tags, hostname)
+		interval := g.Config().Daemon.Interval
+		m := metric.CreateMetric(time.Duration(interval)*time.Second, client, tags, hostname)
 		metric.AddContainerMetric(container.ID, m)
 		go watcher(m, c.ID, c.State.Pid)
 	}

@@ -27,6 +27,7 @@ type TransferConfig struct {
 type DaemonConfig struct {
 	Enable   bool   `json:"enable"`
 	Addr     string `json:"addr"`
+	Interval int64  `json:"interval"`
 	CertDir  string `json:"certdir"`
 	Username string `json:"username"`
 	Password string `json:"password"`
