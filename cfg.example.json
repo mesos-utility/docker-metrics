@@ -6,13 +6,13 @@
     },
     "transfer": {
         "enable": true,
-        "addr": "10.103.11.34:8433",
+        "addr": "127.0.0.1:8433",
         "interval": 6,
         "timeout": 1000
     },
-    "Daemon": {
+    "daemon": {
         "enable": true,
-        "addr" : "tcp://10.100.27.51:4243",
+        "addr" : "tcp://127.0.0.1:2375",
         "certdir": "/root/.docker"
         "username": "",
         "password": ""

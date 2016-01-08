@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/fsouza/go-dockerclient"
-	"github.com/golang/glog"
 	"github.com/mesos-utility/docker-metrics/g"
 )
 
@@ -24,7 +23,7 @@ func NewDockerClient() (client *docker.Client, err error) {
 			return nil, errors.New("Please check docker addr in cfg.json!!!")
 		}
 
-		if _, err := checkCertFiles(certDir, certs); err == nil {
+		if _, err := g.CheckFilesExist(certDir, certs); err == nil {
 			cert := fmt.Sprintf("%s/cert.pem", certDir)
 			key := fmt.Sprintf("%s/key.pem", certDir)
 			ca := fmt.Sprintf("%s/ca.pem", certDir)
@@ -34,26 +33,5 @@ func NewDockerClient() (client *docker.Client, err error) {
 		}
 	}
 
-	if err != nil {
-		glog.Errorf("%v", err)
-	}
-
 	return client, err
-}
-
-// check cert files exists and read ok.
-func checkCertFiles(dir string, files []string) (ret bool, err error) {
-	if dir == "" || len(files) <= 0 {
-		return false, errors.New("dir or files is nil")
-	}
-
-	for _, file := range files {
-		ret, err = g.IsExists(fmt.Sprintf("%s/%s", dir, file))
-
-		if err != nil {
-			return ret, err
-		}
-	}
-
-	return true, nil
 }

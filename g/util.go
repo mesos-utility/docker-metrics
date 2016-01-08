@@ -1,6 +1,7 @@
 package g
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
@@ -12,6 +13,23 @@ func IsExists(file string) (ret bool, err error) {
 	} else {
 		return true, nil
 	}
+}
+
+// check cert files exists and read ok.
+func CheckFilesExist(dir string, files []string) (ret bool, err error) {
+	if dir == "" || len(files) <= 0 {
+		return false, errors.New("dir or files is nil")
+	}
+
+	for _, file := range files {
+		ret, err = IsExists(fmt.Sprintf("%s/%s", dir, file))
+
+		if err != nil {
+			return ret, err
+		}
+	}
+
+	return true, nil
 }
 
 // display version info.

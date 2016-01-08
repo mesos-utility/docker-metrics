@@ -36,6 +36,7 @@ func getTagFromContainer(ct *docker.Container) (tag string) {
 				tag = tag[1:]
 			}
 			tag = fmt.Sprintf("app=%s", tag)
+			break
 		}
 	}
 
