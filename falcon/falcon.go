@@ -12,9 +12,12 @@ import (
 	"github.com/toolkits/net"
 )
 
-func CreateFalconClient(transfer string, timeout time.Duration) *FalconClient {
+func CreateFalconClient() *FalconClient {
+	transferAddr := g.Config().Transfer.Addr
+	timeout := time.Duration(g.Config().Transfer.Timeout) * time.Millisecond
+
 	return &FalconClient{
-		RpcServer: transfer,
+		RpcServer: transferAddr,
 		Timeout:   timeout,
 	}
 }

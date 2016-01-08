@@ -12,14 +12,14 @@ import (
 	"github.com/mesos-utility/docker-metrics/g"
 )
 
-func SetGlobalSetting(client DockerClient, timeout, force time.Duration, vlanPrefix, defaultVlan string) {
-	gset = Setting{timeout, force, vlanPrefix, defaultVlan, client}
+func SetGlobalSetting(dclient DockerClient, timeout, force time.Duration, vlanPrefix, defaultVlan string) {
+	gset = Setting{timeout, force, vlanPrefix, defaultVlan, dclient}
 }
 
-func CreateMetric(step time.Duration, client Remote, tag string, endpoint string) Metric {
+func CreateMetric(step time.Duration, fclient Remote, tag string, endpoint string) Metric {
 	return Metric{
 		Step:     step,
-		Client:   client,
+		Client:   fclient,
 		Tag:      tag,
 		Endpoint: endpoint,
 		Stop:     make(chan bool),
@@ -61,7 +61,7 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 
 	opt := docker.StatsOptions{cid, statsChan, false, doneChan, gset.timeout * time.Second}
 	go func() {
-		if err := gset.client.Stats(opt); err != nil {
+		if err := gset.dclient.Stats(opt); err != nil {
 			glog.Warningf("Get stats failed %s: %v", cid[:12], err)
 		}
 	}()

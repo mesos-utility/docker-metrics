@@ -34,7 +34,7 @@ type Setting struct {
 	force       time.Duration
 	vlanPrefix  string
 	defaultVlan string
-	client      DockerClient
+	dclient     DockerClient
 }
 
 var gset Setting
