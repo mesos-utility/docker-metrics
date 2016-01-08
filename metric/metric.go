@@ -108,8 +108,8 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 	second_t := delta.Seconds()
 	for k, d := range info {
 		switch {
-		case strings.HasPrefix(k, "cpu_") && d >= self.Save[k]:
-			rate[fmt.Sprintf("%s_rate", k)] = float64(d-self.Save[k]) / nano_t
+		case strings.HasPrefix(k, "cpu.") && d >= self.Save[k]:
+			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) / nano_t
 		case (strings.HasPrefix(k, gset.vlanPrefix) || strings.HasPrefix(k, gset.defaultVlan)) && d >= self.Save[k]:
 			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) / second_t
 		case strings.HasPrefix(k, "mem"):

@@ -2,6 +2,7 @@ package watcher
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
@@ -12,17 +13,43 @@ import (
 )
 
 func AddContainerWatched(dclient *docker.Client, container docker.APIContainers, client *falcon.FalconClient) {
-	hostname, _ := g.Hostname()
-	shortID := container.ID[:g.IDLEN]
-	tag := fmt.Sprintf("app=yks-web,id=%s", shortID)
-	m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tag, hostname)
-	metric.AddContainerMetric(container.ID, m)
-
 	if c, err := dclient.InspectContainer(container.ID); err != nil {
 		glog.Warningf("%s: %v", container.ID, err)
 	} else {
+		hostname, _ := g.Hostname()
+		shortID := container.ID[:g.IDLEN]
+		tag := getTagFromContainer(c)
+		tags := fmt.Sprintf("%s,id=%s", tag, shortID)
+		m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tags, hostname)
+		metric.AddContainerMetric(container.ID, m)
 		go watcher(m, c.ID, c.State.Pid)
 	}
+}
+
+// Get tag from container: app=MARATHON_APP_ID or image=Imagename
+func getTagFromContainer(ct *docker.Container) (tag string) {
+	tag = ""
+	for _, v := range ct.Config.Env {
+		if strings.HasPrefix(v, "MARATHON_APP_ID") {
+			tag = strings.Split(v, "=")[1]
+			if strings.HasPrefix(tag, "/") {
+				tag = tag[1:]
+			}
+			tag = fmt.Sprintf("app=%s", tag)
+		}
+	}
+
+	if tag == "" {
+		if strings.Contains(ct.Config.Image, "/") {
+			tmparray := strings.Split(ct.Config.Image, "/")
+			tag = tmparray[len(tmparray)-1]
+		} else {
+			tag = ct.Config.Image[:12]
+		}
+		tag = fmt.Sprintf("image=%s", tag)
+	}
+
+	return tag
 }
 
 func watcher(serv metric.Metric, cid string, pid int) {
