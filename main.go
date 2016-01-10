@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
@@ -55,7 +54,7 @@ func main() {
 				if _, ok := metric.ContainerMetricMap()[container.ID]; ok {
 					continue
 				} else {
-					fmt.Println("Add ID: ", container.ID)
+					glog.Infoln("Add ID: ", container.ID[:g.IDLEN])
 					watcher.AddContainerWatched(dclient, container, fclient)
 				}
 			}

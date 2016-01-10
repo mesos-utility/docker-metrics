@@ -1,9 +1,10 @@
 package g
 
 import (
-	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // check file exists or not.
@@ -18,12 +19,15 @@ func IsExists(file string) (ret bool, err error) {
 // check cert files exists and read ok.
 func CheckFilesExist(dir string, files []string) (ret bool, err error) {
 	if dir == "" || len(files) <= 0 {
-		return false, errors.New("dir or files is nil")
+		return false, fmt.Errorf("dir or files is nil")
 	}
 
 	for _, file := range files {
-		ret, err = IsExists(fmt.Sprintf("%s/%s", dir, file))
+		if strings.TrimSpace(file) == "" {
+			return false, fmt.Errorf("have a nil file name")
+		}
 
+		ret, err = IsExists(filepath.Join(dir, file))
 		if err != nil {
 			return ret, err
 		}
