@@ -1,7 +1,6 @@
 package metric
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -70,13 +69,11 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	select {
 	case stats = <-statsChan:
 		if stats == nil {
-			errmsg := fmt.Sprintf("Get stats failed: %s", cid[:12])
-			return info, errors.New(errmsg)
+			return info, fmt.Errorf("Get stats failed: %s", cid[:12])
 		}
 	case <-time.After(gset.force * time.Second):
 		doneChan <- true
-		errmsg := fmt.Sprintf("Get stats timeout: %s", cid[:12])
-		return info, errors.New(errmsg)
+		return info, fmt.Errorf("Get stats timeout: %s", cid[:12])
 	}
 
 	info["cpu.user"] = stats.CPUStats.CPUUsage.UsageInUsermode
