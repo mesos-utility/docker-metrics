@@ -113,9 +113,17 @@ func (self *FalconClient) Send(data map[string]float64, endpoint, tag string, ti
 	}
 	//log.Printf("%v\n", metrics)
 
+	if len(metrics) == 0 {
+		return nil
+	}
+
 	var resp model.TransferResponse
-	if err := self.call("Transfer.Update", metrics, &resp); err != nil {
-		return err
+	if g.Config().Transfer.Enable {
+		if err := self.call("Transfer.Update", metrics, &resp); err != nil {
+			return err
+		}
+	} else {
+		glog.Infoln("=> <Total=%d> %v\n", len(metrics), metrics[0])
 	}
 
 	if g.Config().Debug {

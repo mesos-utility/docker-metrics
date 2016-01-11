@@ -14,7 +14,7 @@
         "enable": true,
         "addr" : "tcp://127.0.0.1:2375",
         "interval": 30,
-        "certdir": "/root/.docker"
+        "certdir": "/root/.docker",
         "username": "",
         "password": ""
     }
