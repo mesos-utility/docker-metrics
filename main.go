@@ -25,6 +25,11 @@ func main() {
 	// global config
 	g.ParseConfig(*cfg)
 
+	initAndStartWatcher()
+}
+
+// init and start watcher
+func initAndStartWatcher() {
 	metric.InitContainerMetricMap()
 	dclient, err := dockerclient.NewDockerClient()
 	if err != nil {
