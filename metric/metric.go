@@ -26,7 +26,7 @@ func CreateMetric(step time.Duration, fclient Remote, tag string, endpoint strin
 }
 
 func (self *Metric) InitMetric(cid string, pid int) (err error) {
-	if self.statFile, err = os.Open(fmt.Sprintf("/proc/%d/net/dev", pid)); err != nil {
+	if self.statNetFile, err = os.Open(fmt.Sprintf("/proc/%d/net/dev", pid)); err != nil {
 		if os.IsNotExist(err) {
 			glog.Warningf("container id: %s exited.", cid)
 			DeleteContainerMetricMapKey(cid)
@@ -34,6 +34,16 @@ func (self *Metric) InitMetric(cid string, pid int) (err error) {
 		}
 		return
 	}
+
+	if self.statDiskFile, err = os.Open(fmt.Sprintf("/proc/%d/io", pid)); err != nil {
+		if os.IsNotExist(err) {
+			glog.Warningf("container id: %s exited.", cid)
+			DeleteContainerMetricMapKey(cid)
+			self.Exit()
+		}
+		return
+	}
+
 	var info map[string]uint64
 	if info, err = self.UpdateStats(cid, pid); err == nil {
 		self.Last = time.Now()
@@ -43,7 +53,8 @@ func (self *Metric) InitMetric(cid string, pid int) (err error) {
 }
 
 func (self *Metric) Exit() {
-	defer self.statFile.Close()
+	defer self.statNetFile.Close()
+	defer self.statDiskFile.Close()
 	self.Stop <- true
 	close(self.Stop)
 }
@@ -88,6 +99,10 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	if err := self.getNetStats(info); err != nil {
 		return info, err
 	}
+	if err := self.getDiskStats(info); err != nil {
+		return info, err
+	}
+
 	return info, nil
 }
 
@@ -107,6 +122,8 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 		switch {
 		case strings.HasPrefix(k, "cpu.") && d >= self.Save[k]:
 			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) / nano_t
+		case strings.HasPrefix(k, "disk.") && d >= self.Save[k]:
+			rate[fmt.Sprintf("%s", k)] = float64(d-self.Save[k]) / nano_t
 		case (strings.HasPrefix(k, gset.vlanPrefix) || strings.HasPrefix(k, gset.defaultVlan)) && d >= self.Save[k]:
 			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) / second_t
 		case strings.HasPrefix(k, "mem"):

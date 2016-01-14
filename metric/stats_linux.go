@@ -8,8 +8,8 @@ import (
 )
 
 func (self *Metric) getNetStats(result map[string]uint64) (err error) {
-	s := bufio.NewScanner(self.statFile)
-	defer self.statFile.Seek(0, 0)
+	s := bufio.NewScanner(self.statNetFile)
+	defer self.statNetFile.Seek(0, 0)
 	var d uint64
 	for s.Scan() {
 		var name string
@@ -39,4 +39,28 @@ func (self *Metric) getNetStats(result map[string]uint64) (err error) {
 	}
 	//log.Println("Container net status", result)
 	return
+}
+
+func (self *Metric) getDiskStats(result map[string]uint64) (err error) {
+	s := bufio.NewScanner(self.statDiskFile)
+	defer self.statDiskFile.Seek(0, 0)
+	var d uint64
+	for s.Scan() {
+		var name string
+		var n [8]uint64
+		text := s.Text()
+		if strings.Index(text, ":") < 1 {
+			continue
+		}
+		ts := strings.Split(text, ":")
+		fmt.Sscanf(ts[0], "%s", &name)
+		if name != "write_bytes" || name != "read_bytes" {
+			continue
+		}
+		fmt.Sscanf(ts[1], "%d", &n[0])
+		result["disk.io."+name] = n[0]
+	}
+	//log.Println("Container net status", result)
+	return
+
 }

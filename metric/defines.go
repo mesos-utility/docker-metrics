@@ -22,8 +22,10 @@ type Metric struct {
 	Tag      string
 	Endpoint string
 
-	statFile *os.File
-	Last     time.Time
+	statNetFile  *os.File
+	statDiskFile *os.File
+
+	Last time.Time
 
 	Stop chan bool
 	Save map[string]uint64
