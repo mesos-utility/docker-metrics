@@ -47,18 +47,18 @@ func (self *Metric) getDiskStats(result map[string]uint64) (err error) {
 	var d uint64
 	for s.Scan() {
 		var name string
-		var n [8]uint64
 		text := s.Text()
 		if strings.Index(text, ":") < 1 {
 			continue
 		}
 		ts := strings.Split(text, ":")
 		fmt.Sscanf(ts[0], "%s", &name)
+		name = strings.TrimSpace(name)
 		if name != "write_bytes" || name != "read_bytes" {
 			continue
 		}
-		fmt.Sscanf(ts[1], "%d", &n[0])
-		result["disk.io."+name] = n[0]
+		fmt.Sscanf(ts[1], "%d", &d)
+		result["disk.io."+name] = d
 	}
 	//log.Println("Container net status", result)
 	return
