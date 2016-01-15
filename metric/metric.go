@@ -64,9 +64,11 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	statsChan := make(chan *docker.Stats)
 	doneChan := make(chan bool)
 
-	if ok, _ := g.IsExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
-		DeleteContainerMetricMapKey(cid)
-		self.Exit()
+	if ok, err := g.IsExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
+		if os.IsNotExist(err) {
+			DeleteContainerMetricMapKey(cid)
+			self.Exit()
+		}
 	}
 
 	opt := docker.StatsOptions{cid, statsChan, false, doneChan, gset.timeout * time.Second}
