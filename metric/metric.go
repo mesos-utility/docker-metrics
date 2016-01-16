@@ -40,8 +40,9 @@ func (self *Metric) InitMetric(cid string, pid int) (err error) {
 			glog.Warningf("container id: %s exited.", cid)
 			DeleteContainerMetricMapKey(cid)
 			self.Exit()
+		} else if !os.IsPermission(err) {
+			return
 		}
-		return
 	}
 
 	var info map[string]uint64
@@ -97,10 +98,11 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	info["mem.max_usage"] = stats.MemoryStats.MaxUsage
 	info["mem.rss"] = stats.MemoryStats.Stats.Rss
 
-	// fixme use docker api network data.
+	//FIXME use docker api network data.
 	if err := self.getNetStats(info); err != nil {
 		return info, err
 	}
+	//FIXME use docker api disk io data.
 	if err := self.getDiskStats(info); err != nil {
 		return info, err
 	}

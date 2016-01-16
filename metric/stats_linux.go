@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Get disk stats from /proc/{pid}/net/dev
 func (self *Metric) getNetStats(result map[string]uint64) (err error) {
 	s := bufio.NewScanner(self.statNetFile)
 	defer self.statNetFile.Seek(0, 0)
@@ -37,10 +38,11 @@ func (self *Metric) getNetStats(result map[string]uint64) (err error) {
 		result[name+".outerrs"] = n[6]
 		result[name+".outdrop"] = n[7]
 	}
-	//log.Println("Container net status", result)
 	return
 }
 
+// Get disk stats from /proc/{pid}/io
+// may failed by permission denied.
 func (self *Metric) getDiskStats(result map[string]uint64) (err error) {
 	s := bufio.NewScanner(self.statDiskFile)
 	defer self.statDiskFile.Seek(0, 0)
@@ -60,7 +62,6 @@ func (self *Metric) getDiskStats(result map[string]uint64) (err error) {
 		fmt.Sscanf(ts[1], "%d", &d)
 		result["disk.io."+name] = d
 	}
-	//log.Println("Container net status", result)
 	return
 
 }
