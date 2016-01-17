@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/golang/glog"
 )
 
 // check file exists or not.
@@ -41,5 +43,11 @@ func HandleVersion(displayVersion bool) {
 	if displayVersion {
 		fmt.Println(VERSION)
 		os.Exit(0)
+	}
+}
+
+func Assert(err error) {
+	if err != nil {
+		glog.Fatalf("Assert failed: %s", err)
 	}
 }
