@@ -17,9 +17,16 @@ func AddContainerWatched(dclient *docker.Client, container docker.APIContainers,
 		glog.Warningf("%s: %v", container.ID, err)
 	} else {
 		hostname, _ := g.Hostname()
+		// format tags
 		shortID := container.ID[:g.IDLEN]
 		tag := getTagFromContainer(c)
 		tags := fmt.Sprintf("%s,id=%s", tag, shortID)
+		attachTags := strings.TrimSpace(g.Config().AttachTags)
+		if attachTags != "" {
+			tags += fmt.Sprintf(",%s", attachTags)
+		}
+		tags = strings.Trim(tags, ",")
+		// get interval
 		interval := g.Config().Daemon.Interval
 		m := metric.CreateMetric(time.Duration(interval)*time.Second, fclient, tags, hostname)
 		metric.AddContainerMetric(container.ID, m)
