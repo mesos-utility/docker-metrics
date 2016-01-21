@@ -40,7 +40,10 @@ func (self *Metric) InitMetric(cid string, pid int) (err error) {
 			glog.Warningf("container id: %s exited.", cid)
 			DeleteContainerMetricMapKey(cid)
 			self.Exit()
-		} else if !os.IsPermission(err) {
+		} else if os.IsPermission(err) {
+			glog.Warningf("fail open disk static file %v", err)
+			err = nil
+		} else {
 			return
 		}
 	}
