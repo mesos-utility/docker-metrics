@@ -1,0 +1,126 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"path": "github.com/fsouza/go-dockerclient",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/Sirupsen/logrus",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/opts",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/archive",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/fileutils",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/homedir",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/idtools",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/ioutils",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/longpath",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/parsers",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/pools",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/promise",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/stdcopy",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/system",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/ulimit",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/docker/docker/pkg/units",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/hashicorp/go-cleanhttp",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/fsouza/go-dockerclient/external/github.com/opencontainers/runc/libcontainer/user",
+			"revision": "e0d22d30691bcc996eca51f729a4777b8c7dc2a8",
+			"revisionTime": "2015-12-21T10:00:12-02:00"
+		},
+		{
+			"path": "github.com/golang/glog",
+			"revision": "fca8c8854093a154ff1eb580aae10276ad6b1b5f",
+			"revisionTime": "2015-08-01T08:52:21+10:00"
+		},
+		{
+			"path": "github.com/open-falcon/common/model",
+			"revision": "42c166575d6d50da8aa70db38b35f8ea8b07cb18",
+			"revisionTime": "2015-10-22T11:32:31+08:00"
+		},
+		{
+			"path": "github.com/open-falcon/common/utils",
+			"revision": "42c166575d6d50da8aa70db38b35f8ea8b07cb18",
+			"revisionTime": "2015-10-22T11:32:31+08:00"
+		},
+		{
+			"path": "github.com/toolkits/file",
+			"revision": "ab007cd1c33919068b9b9538b5b4be22d833c5f1",
+			"revisionTime": "2015-06-05T16:43:03+08:00"
+		},
+		{
+			"path": "github.com/toolkits/net",
+			"revision": "4af4ba7be792e3d19bf094f9a9f465255c81a152",
+			"revisionTime": "2015-04-27T16:14:57+08:00"
+		},
+		{
+			"path": "github.com/toolkits/time",
+			"revision": "ba0362eddf11802c0da422d9ef34671051faa10f",
+			"revisionTime": "2015-06-09T07:37:05Z"
+		}
+	]
+}
