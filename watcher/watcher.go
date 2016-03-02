@@ -49,13 +49,20 @@ func getTagFromContainer(ct *docker.Container) (tag string) {
 	}
 
 	if tag == "" {
+		imglen = len(ct.Config.Image)
+
 		if strings.Contains(ct.Config.Image, "/") {
 			tmparray := strings.Split(ct.Config.Image, "/")
 			tag = tmparray[len(tmparray)-1]
-		} else {
+		} else if imglen > 12 {
 			tag = ct.Config.Image[:12]
+		} else {
+			tag = ct.Config.Image
 		}
-		tag = fmt.Sprintf("image=%s", tag)
+
+		if tag != "" {
+			tag = fmt.Sprintf("image=%s", tag)
+		}
 	}
 
 	return tag
