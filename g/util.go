@@ -9,13 +9,19 @@ import (
 	"github.com/golang/glog"
 )
 
-// check file exists or not.
-func IsExists(file string) (ret bool, err error) {
-	if _, err := os.Stat(file); err != nil {
-		return false, err
-	} else {
-		return true, nil
+// FileExists returns whether a file exists at a given filesystem path.
+func FileExists(path string) (bool, error) {
+	info, err := os.Stat(path)
+	if err == nil {
+		if !info.IsDir() {
+			return true, nil
+		}
+		return false, fmt.Errorf("directory found instead of file at: %s", path)
 	}
+	if os.IsNotExist(err) {
+		return false, fmt.Errorf("not found: %s", path)
+	}
+	return false, err
 }
 
 // check cert files exists and read ok.
@@ -29,7 +35,7 @@ func CheckFilesExist(dir string, files []string) (ret bool, err error) {
 			return false, fmt.Errorf("have a nil file name")
 		}
 
-		ret, err = IsExists(filepath.Join(dir, file))
+		ret, err = FileExists(filepath.Join(dir, file))
 		if err != nil {
 			return ret, err
 		}

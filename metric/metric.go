@@ -68,7 +68,7 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	statsChan := make(chan *docker.Stats)
 	doneChan := make(chan bool)
 
-	if ok, err := g.IsExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
+	if ok, err := g.FileExists(fmt.Sprintf("/proc/%d/net/dev", pid)); !ok {
 		if os.IsNotExist(err) {
 			DeleteContainerMetricMapKey(cid)
 			self.Exit()
@@ -132,7 +132,7 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 		case strings.HasPrefix(k, "disk.") && d >= self.Save[k]:
 			rate[fmt.Sprintf("%s", k)] = float64(d-self.Save[k]) / nano_t
 		case (strings.HasPrefix(k, gset.vlanPrefix) || strings.HasPrefix(k, gset.defaultVlan)) && d >= self.Save[k]:
-			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) / second_t
+			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) * 8.0 / second_t
 		case strings.HasPrefix(k, "mem"):
 			rate[k] = float64(d)
 		}
