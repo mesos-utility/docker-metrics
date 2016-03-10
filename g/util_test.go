@@ -19,7 +19,7 @@ func TestFileExists(t *testing.T) {
 		ret, _ := FileExists(path)
 
 		if b != ret {
-			t.Fatalf("expected %v, got %v")
+			t.Fatalf("expected %v, got %v", b, ret)
 		}
 	}
 }

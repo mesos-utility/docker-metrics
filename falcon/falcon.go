@@ -63,7 +63,6 @@ func (self *FalconClient) insureConn() error {
 		time.Sleep(time.Duration(math.Pow(2.0, float64(retry))) * time.Second)
 		retry++
 	}
-	return nil
 }
 
 func (self *FalconClient) call(method string, args interface{}, reply interface{}) error {
