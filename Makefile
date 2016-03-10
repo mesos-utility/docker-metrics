@@ -8,11 +8,20 @@ default: help
 #	docker build -t mesos-utility/docker-metrics .
 #	touch dockerized/.dockerized_image.created
 
-## Make bin for docker-metrics
+## Make bin for docker-metrics.
 bin:
 	./control build
 
-## Clean everything (including stray volumes)
+## Get vet go tools.
+vet:
+	go get golang.org/x/tools/cmd/vet
+
+## Validate this go project.
+validate: vet
+	script/validate-gofmt
+	go vet ./...
+
+## Clean everything (including stray volumes).
 clean:
 #	find . -name '*.created' -exec rm -f {} +
 	-rm -rf var
