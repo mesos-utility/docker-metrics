@@ -4,8 +4,8 @@ if [ -z "$VALIDATE_UPSTREAM" ]; then
 	# this is kind of an expensive check, so let's not do this twice if we
 	# are running more than one validate bundlescript
 	
-	VALIDATE_REPO='https://github.com/opencontainers/runc.git'
-	VALIDATE_BRANCH='master'
+	VALIDATE_REPO='https://github.com/mesos-utility/docker-metrics.git'
+	VALIDATE_BRANCH='dev'
 	
 	if [ "$TRAVIS" = 'true' -a "$TRAVIS_PULL_REQUEST" != 'false' ]; then
 		VALIDATE_REPO="https://github.com/${TRAVIS_REPO_SLUG}.git"
