@@ -56,12 +56,11 @@ func (self *Metric) getDiskStats(result map[string]uint64) (err error) {
 		ts := strings.Split(text, ":")
 		fmt.Sscanf(ts[0], "%s", &name)
 		name = strings.TrimSpace(name)
-		if name != "write_bytes" || name != "read_bytes" {
+		if name != "write_bytes" && name != "read_bytes" {
 			continue
 		}
 		fmt.Sscanf(ts[1], "%d", &d)
 		result["disk.io."+name] = d
 	}
 	return
-
 }
