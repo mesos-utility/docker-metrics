@@ -75,7 +75,9 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 		}
 	}
 
-	opt := docker.StatsOptions{cid, statsChan, false, doneChan, gset.timeout * time.Second}
+	opt := docker.StatsOptions{ID: cid, Stats: statsChan,
+                               Stream: false, Done: doneChan,
+                               Timeout: gset.timeout * time.Second}
 	go func() {
 		if err := gset.dclient.Stats(opt); err != nil {
 			glog.Warningf("Get stats failed %s: %v", cid[:12], err)
