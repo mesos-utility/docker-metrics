@@ -20,3 +20,24 @@ docker监控脚本
 
 2. 测试： ./control build && ./control start
  * $GOPATH/bin/govendor init && $GOPATH/bin/govendor add +external && GO15VENDOREXPERIMENT=1 go build
+
+采集的指标
+--------------------------
+| Counters | Notes|
+|-----|------|
+|cpu.system.rate|内核态使用的CPU百分比|
+|cpu.usage.rate|cpu使用情况百分比|
+|cpu.user.rate|用户态使用的CPU百分比|
+|mem.usage|内存使用百分比|
+|mem.rss|内存使用原值|
+|mem.max_usage|内存总量|
+|disk.io.read_bytes|磁盘io读字节数|
+|disk.io.write_bytes|磁盘io写字节数|
+|ifname.inbytes.rate|网络io流入字节数|
+|ifname.inpackets.rate|网络io流入包数|
+|ifname.inerrs.rate|网络io流入出错数|
+|ifname.indrop.rate|网络io流入丢弃数|
+|ifname.outbytes.rate|网络io流出字节数|
+|ifname.outpackets.rate|网络io流出包数|
+|ifname.outerrs.rate|网络io流出出错数|
+|ifname.outdrop.rate|网络io流出丢弃数|
