@@ -10,16 +10,23 @@ func TestFileExists(t *testing.T) {
 	_, file, _, _ := runtime.Caller(1)
 	path, _ := os.Getwd()
 
-	files := map[bool]string{
-		true:  file,
-		false: path,
+	type fileTest struct {
+		result   bool
+		filename string
 	}
 
-	for b, path := range files {
-		ret, _ := FileExists(path)
+	var files = []fileTest{
+		{true, file},
+		{false, path},
+		{false, "."},
+		{false, "../"},
+	}
 
-		if b != ret {
-			t.Fatalf("expected %v, got %v", b, ret)
+	for _, test := range files {
+		ret, _ := FileExists(test.filename)
+
+		if test.result != ret {
+			t.Errorf("FileExists(%v) = %v, want %v", test.filename, ret, test.result)
 		}
 	}
 }

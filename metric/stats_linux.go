@@ -29,11 +29,11 @@ func (self *Metric) getNetStats(result map[string]uint64) (err error) {
 			&n[0], &n[1], &n[2], &n[3], &d, &d, &d, &d,
 			&n[4], &n[5], &n[6], &n[7], &d, &d, &d, &d,
 		)
-		result[name+".inbytes"] = n[0]
+		result[name+".inbits"] = n[0]
 		result[name+".inpackets"] = n[1]
 		result[name+".inerrs"] = n[2]
 		result[name+".indrop"] = n[3]
-		result[name+".outbytes"] = n[4]
+		result[name+".outbits"] = n[4]
 		result[name+".outpackets"] = n[5]
 		result[name+".outerrs"] = n[6]
 		result[name+".outdrop"] = n[7]

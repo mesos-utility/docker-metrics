@@ -33,11 +33,11 @@ docker监控脚本
 |mem.max_usage|内存总量|
 |disk.io.read_bytes|磁盘io读字节数|
 |disk.io.write_bytes|磁盘io写字节数|
-|ifname.inbytes.rate|网络io流入字节数|
+|ifname.inbits.rate|网络io流入bits数|
 |ifname.inpackets.rate|网络io流入包数|
 |ifname.inerrs.rate|网络io流入出错数|
 |ifname.indrop.rate|网络io流入丢弃数|
-|ifname.outbytes.rate|网络io流出字节数|
+|ifname.outbits.rate|网络io流出bits数|
 |ifname.outpackets.rate|网络io流出包数|
 |ifname.outerrs.rate|网络io流出出错数|
 |ifname.outdrop.rate|网络io流出丢弃数|
