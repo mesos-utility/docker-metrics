@@ -12,15 +12,23 @@ import (
 	"github.com/mesos-utility/docker-metrics/metric"
 )
 
-func AddContainerWatched(dclient *docker.Client, container docker.APIContainers, client *falcon.FalconClient) {
+func AddContainerWatched(dclient *docker.Client, container docker.APIContainers, fclient *falcon.FalconClient) {
 	if c, err := dclient.InspectContainer(container.ID); err != nil {
 		glog.Warningf("%s: %v", container.ID, err)
 	} else {
 		hostname, _ := g.Hostname()
+		// format tags
 		shortID := container.ID[:g.IDLEN]
 		tag := getTagFromContainer(c)
 		tags := fmt.Sprintf("%s,id=%s", tag, shortID)
-		m := metric.CreateMetric(time.Duration(g.Interval)*time.Second, client, tags, hostname)
+		attachTags := strings.TrimSpace(g.Config().AttachTags)
+		if attachTags != "" {
+			tags += fmt.Sprintf(",%s", attachTags)
+		}
+		tags = strings.Trim(tags, ",")
+		// get interval
+		interval := g.Config().Daemon.Interval
+		m := metric.CreateMetric(time.Duration(interval)*time.Second, fclient, tags, hostname)
 		metric.AddContainerMetric(container.ID, m)
 		go watcher(m, c.ID, c.State.Pid)
 	}
@@ -41,13 +49,20 @@ func getTagFromContainer(ct *docker.Container) (tag string) {
 	}
 
 	if tag == "" {
+		imglen := len(ct.Config.Image)
+
 		if strings.Contains(ct.Config.Image, "/") {
 			tmparray := strings.Split(ct.Config.Image, "/")
 			tag = tmparray[len(tmparray)-1]
-		} else {
+		} else if imglen > 12 {
 			tag = ct.Config.Image[:12]
+		} else {
+			tag = ct.Config.Image
 		}
-		tag = fmt.Sprintf("image=%s", tag)
+
+		if tag != "" {
+			tag = fmt.Sprintf("image=%s", tag)
+		}
 	}
 
 	return tag

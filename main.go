@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
@@ -19,7 +17,6 @@ var cfg = flag.String("c", "cfg.json", "configuration file")
 var version = flag.Bool("version", false, "show version")
 
 func main() {
-	var transferAddr string
 	defer glog.Flush()
 	flag.Parse()
 
@@ -28,29 +25,32 @@ func main() {
 	// global config
 	g.ParseConfig(*cfg)
 
+	initAndStartWatcher()
+}
+
+// init and start watcher
+func initAndStartWatcher() {
 	metric.InitContainerMetricMap()
-	transferAddr = g.Config().Transfer.Addr
 	dclient, err := dockerclient.NewDockerClient()
 	if err != nil {
-		glog.Errorf("%v", err)
-		return
+		glog.Fatalf("New docker api client error: %v", err)
 	}
 
 	metric.SetGlobalSetting(dclient, 2, 3, "vnbe", "eth0")
-	client := falcon.CreateFalconClient(transferAddr, 5*time.Millisecond)
+	fclient := falcon.CreateFalconClient()
 
 	if containers, err := dclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
 		glog.Errorf("Get container error: %v", err)
-		os.Exit(1)
 	} else {
 		for _, container := range containers {
-			watcher.AddContainerWatched(dclient, container, client)
+			watcher.AddContainerWatched(dclient, container, fclient)
 		}
 	}
 
 	for {
 	REST:
-		time.Sleep(time.Duration(g.Interval/2) * time.Second)
+		interval := g.Config().Daemon.Interval / 2
+		time.Sleep(time.Duration(interval) * time.Second)
 		if containers, err := dclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
 			glog.Errorf("Get container error: %v", err)
 			goto REST
@@ -59,8 +59,8 @@ func main() {
 				if _, ok := metric.ContainerMetricMap()[container.ID]; ok {
 					continue
 				} else {
-					fmt.Println("Add ID: ", container.ID)
-					watcher.AddContainerWatched(dclient, container, client)
+					glog.Infoln("Add ID: ", container.ID[:g.IDLEN])
+					watcher.AddContainerWatched(dclient, container, fclient)
 				}
 			}
 		}

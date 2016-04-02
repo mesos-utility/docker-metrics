@@ -1,5 +1,6 @@
 {
     "debug": true,
+    "attachTags": "",
     "http": {
         "enable": false,
         "listen": "0.0.0.0:1987"
@@ -13,7 +14,8 @@
     "daemon": {
         "enable": true,
         "addr" : "tcp://127.0.0.1:2375",
-        "certdir": "/root/.docker"
+        "interval": 30,
+        "certdir": "/root/.docker",
         "username": "",
         "password": ""
     }

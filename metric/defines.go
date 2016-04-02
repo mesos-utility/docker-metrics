@@ -22,8 +22,10 @@ type Metric struct {
 	Tag      string
 	Endpoint string
 
-	statFile *os.File
-	Last     time.Time
+	statNetFile  *os.File
+	statDiskFile *os.File
+
+	Last time.Time
 
 	Stop chan bool
 	Save map[string]uint64
@@ -34,7 +36,7 @@ type Setting struct {
 	force       time.Duration
 	vlanPrefix  string
 	defaultVlan string
-	client      DockerClient
+	dclient     DockerClient
 }
 
 var gset Setting

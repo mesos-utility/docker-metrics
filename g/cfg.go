@@ -27,6 +27,7 @@ type TransferConfig struct {
 type DaemonConfig struct {
 	Enable   bool   `json:"enable"`
 	Addr     string `json:"addr"`
+	Interval int64  `json:"interval"`
 	CertDir  string `json:"certdir"`
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -34,10 +35,11 @@ type DaemonConfig struct {
 
 // global config file
 type GlobalConfig struct {
-	Debug    bool            `json:"debug"`
-	Http     *HttpConfig     `json:"http"`
-	Transfer *TransferConfig `json:"transfer"`
-	Daemon   *DaemonConfig   `json:"daemon"`
+	Debug      bool            `json:"debug"`
+	AttachTags string          `json:"attachtags"`
+	Http       *HttpConfig     `json:"http"`
+	Transfer   *TransferConfig `json:"transfer"`
+	Daemon     *DaemonConfig   `json:"daemon"`
 }
 
 var (

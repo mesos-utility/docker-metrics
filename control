@@ -20,7 +20,7 @@ const (
     COMMIT = "$commit"
 )
 EOF
-    go build -o $app main.go
+    GO15VENDOREXPERIMENT=1; go build -o $app main.go
     sc=$?
     if [ $sc -ne 0 ];then
         echo "build error"

@@ -5,9 +5,8 @@ import (
 )
 
 const (
-	VERSION        = "0.1.0"
-	IDLEN    int   = 12
-	Interval int64 = 10
+	VERSION     = "0.2.0"
+	IDLEN   int = 12
 )
 
 func init() {
