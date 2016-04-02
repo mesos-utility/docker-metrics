@@ -1,5 +1,6 @@
 docker监控脚本
 ================================
+[![Build Status](https://travis-ci.org/mesos-utility/docker-metrics.png?branch=dev)](https://travis-ci.org/mesos-utility/docker-metrics)
 
 系统需求
 --------------------------------
