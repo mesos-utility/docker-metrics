@@ -1,5 +1,4 @@
 language: go
-sudo: false
 go:
   - 1.5.3
   - 1.6
@@ -8,9 +7,10 @@ env:
   global:
     - GOARCH=amd64
     - GO15VENDOREXPERIMENT=1
-install: true
+#install: true
 script:
   - make validate
+  - make test
   - make bin
 notifications:
   email:

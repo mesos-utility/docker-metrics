@@ -21,6 +21,10 @@ validate: vet
 	script/validate-gofmt
 	go vet ./...
 
+## Run test case for this go project.
+test:
+	go test ./...
+
 ## Clean everything (including stray volumes).
 clean:
 #	find . -name '*.created' -exec rm -f {} +
