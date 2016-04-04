@@ -38,8 +38,9 @@ func initAndStartWatcher() {
 
 	metric.SetGlobalSetting(dclient, 2, 3, "vnbe", "eth0")
 	fclient := falcon.CreateFalconClient()
+	options := docker.ListContainersOptions{All: false}
 
-	if containers, err := dclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
+	if containers, err := dclient.ListContainers(options); err != nil {
 		glog.Errorf("Get container error: %v", err)
 	} else {
 		for _, container := range containers {
@@ -51,7 +52,7 @@ func initAndStartWatcher() {
 	REST:
 		interval := g.Config().Daemon.Interval / 2
 		time.Sleep(time.Duration(interval) * time.Second)
-		if containers, err := dclient.ListContainers(docker.ListContainersOptions{All: false}); err != nil {
+		if containers, err := dclient.ListContainers(options); err != nil {
 			glog.Errorf("Get container error: %v", err)
 			goto REST
 		} else {
