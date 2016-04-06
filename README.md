@@ -21,6 +21,7 @@ docker监控脚本
 
 2. 测试： ./control build && ./control start
  * $GOPATH/bin/govendor init && $GOPATH/bin/govendor add +external && GO15VENDOREXPERIMENT=1 go build
+ * 注意点: 推荐使用go1.5版本及以上编译源代码,因为使用了GO15VENDOREXPERIMENT及govendor做lib库的版本管理;
 
 采集的指标
 --------------------------
