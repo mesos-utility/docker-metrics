@@ -14,7 +14,7 @@ bin:
 
 ## Get vet go tools.
 vet:
-	go get golang.org/x/tools/cmd/vet
+	go get -u golang.org/x/tools/cmd/vet
 
 ## Validate this go project.
 validate: vet
