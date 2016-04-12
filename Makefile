@@ -1,4 +1,9 @@
 default: help
+
+HOST_GOLANG_VERSION     = $(go version | cut -d ' ' -f3 | cut -c 3-)
+# this variable is used like a function. First arg is the minimum version, Second arg is the version to be checked.
+ALLOWED_GO_VERSION      = $(test '$(/bin/echo -e "$(1)\n$(2)" | sort -V | head -n1)' == '$(1)' && echo 'true')
+
 #docker_image: dockerized/.dockerized.created ## Create the calico/mesos-calico image
 
 # TODO: maybe change this so docker runs and handles the caching itself,
@@ -16,10 +21,17 @@ bin:
 vet:
 	go get -u golang.org/x/tools/cmd/vet
 
+# `go get github.com/golang/lint/golint`
+.golint:
+	go get github.com/golang/lint/golint
+ifeq ($(call ALLOWED_GO_VERSION,1.5,$(HOST_GOLANG_VERSION)),true)
+	golint ./...
+endif
+
 ## Validate this go project.
-validate: vet
+validate:
 	script/validate-gofmt
-	go vet ./...
+#	go vet ./...
 
 ## Run test case for this go project.
 test:
