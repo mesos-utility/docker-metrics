@@ -23,6 +23,11 @@ type TransferConfig struct {
 	Timeout  int    `json:"timeout"`
 }
 
+// iface prefix
+type CollectorConfig struct {
+	IfacePrefix []string `json:"ifacePrefix"`
+}
+
 // docker daemon config section
 type DaemonConfig struct {
 	Enable   bool   `json:"enable"`
@@ -35,11 +40,12 @@ type DaemonConfig struct {
 
 // global config file
 type GlobalConfig struct {
-	Debug      bool            `json:"debug"`
-	AttachTags string          `json:"attachtags"`
-	Http       *HttpConfig     `json:"http"`
-	Transfer   *TransferConfig `json:"transfer"`
-	Daemon     *DaemonConfig   `json:"daemon"`
+	Debug      bool             `json:"debug"`
+	AttachTags string           `json:"attachtags"`
+	Http       *HttpConfig      `json:"http"`
+	Transfer   *TransferConfig  `json:"transfer"`
+	Collector  *CollectorConfig `json:"collector"`
+	Daemon     *DaemonConfig    `json:"daemon"`
 }
 
 var (

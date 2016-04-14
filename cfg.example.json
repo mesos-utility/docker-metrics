@@ -11,6 +11,9 @@
         "interval": 6,
         "timeout": 1000
     },
+    "collector": {
+        "ifacePrefix": ["eth", "em"]
+    },
     "daemon": {
         "enable": true,
         "addr" : "tcp://127.0.0.1:2375",
