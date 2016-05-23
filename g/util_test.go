@@ -7,7 +7,7 @@ import (
 )
 
 func TestFileExists(t *testing.T) {
-	_, file, _, _ := runtime.Caller(1)
+	_, file, _, _ := runtime.Caller(0)
 	path, _ := os.Getwd()
 
 	type fileTest struct {

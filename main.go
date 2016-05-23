@@ -47,11 +47,12 @@ func initAndStartWatcher() {
 			watcher.AddContainerWatched(dclient, container, fclient)
 		}
 	}
+	var interval int64 = g.Config().Daemon.Interval / 2
+	timer := time.NewTicker(time.Duration(interval) * time.Second)
 
 	for {
 	REST:
-		interval := g.Config().Daemon.Interval / 2
-		time.Sleep(time.Duration(interval) * time.Second)
+		<-timer.C
 		if containers, err := dclient.ListContainers(options); err != nil {
 			glog.Errorf("Get container error: %v", err)
 			goto REST

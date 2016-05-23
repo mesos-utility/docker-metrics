@@ -1,9 +1,11 @@
 #!/bin/bash
 
+export PS4='+ [`basename ${BASH_SOURCE[0]}`:$LINENO ${FUNCNAME[0]} \D{%F %T} $$ ] '
+
 source "$(dirname "$BASH_SOURCE")/.validate"
 
 IFS=$'\n'
-files=( $(validate_diff --diff-filter=ACMR --name-only -- '*.go' | grep -v '^Godeps/' || true) )
+files=( $(validate_diff --diff-filter=ACMR --name-only -- '*.go' | grep -v '^vendor/' || true) )
 unset IFS
 
 badFiles=()
