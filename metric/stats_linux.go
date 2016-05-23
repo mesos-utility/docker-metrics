@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Get disk stats from /proc/{pid}/net/dev
+// Get network stats from /proc/{pid}/net/dev
 func (self *Metric) getNetStats(result map[string]uint64) (err error) {
 	s := bufio.NewScanner(self.statNetFile)
 	defer self.statNetFile.Seek(0, 0)
