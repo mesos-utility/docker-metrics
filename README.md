@@ -27,19 +27,19 @@ docker监控脚本
 --------------------------
 | Counters | Notes|
 |-----|------|
-|cpu.system.rate|内核态使用的CPU百分比|
-|cpu.usage.rate|cpu使用情况百分比|
-|cpu.user.rate|用户态使用的CPU百分比|
-|mem.usage|内存使用百分比|
-|mem.rss|内存使用原值|
-|mem.max_usage|内存总量|
-|disk.io.read_bytes|磁盘io读字节数|
-|disk.io.write_bytes|磁盘io写字节数|
-|ifname.inbits.rate|网络io流入bits数|
-|ifname.inpackets.rate|网络io流入包数|
-|ifname.inerrs.rate|网络io流入出错数|
-|ifname.indrop.rate|网络io流入丢弃数|
-|ifname.outbits.rate|网络io流出bits数|
-|ifname.outpackets.rate|网络io流出包数|
-|ifname.outerrs.rate|网络io流出出错数|
-|ifname.outdrop.rate|网络io流出丢弃数|
+|docker.cpu.system | 内核态使用的CPU百分比|
+|docker.cpu.usage | cpu使用情况百分比|
+|docker.cpu.user | 用户态使用的CPU百分比|
+|docker.mem.usage | 内存使用百分比|
+|docker.mem.rss | 内存使用原值|
+|docker.mem.max_usage | 内存总量|
+|docker.disk.io.read_bytes | 磁盘io读字节数|
+|docker.disk.io.write_bytes | 磁盘io写字节数|
+|docker.ifname.inbits | 网络io流入bits数|
+|docker.ifname.inpackets | 网络io流入包数|
+|docker.ifname.inerrs | 网络io流入出错数|
+|docker.ifname.indrop | 网络io流入丢弃数|
+|docker.ifname.outbits | 网络io流出bits数|
+|docker.ifname.outpackets | 网络io流出包数|
+|docker.ifname.outerrs | 网络io流出出错数|
+|docker.ifname.outdrop | 网络io流出丢弃数|

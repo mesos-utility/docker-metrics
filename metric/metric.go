@@ -98,13 +98,13 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 		return info, fmt.Errorf("Get stats timeout: %s", cid[:12])
 	}
 
-	info["cpu.user"] = stats.CPUStats.CPUUsage.UsageInUsermode
-	info["cpu.system"] = stats.CPUStats.CPUUsage.UsageInKernelmode
-	info["cpu.usage"] = stats.CPUStats.CPUUsage.TotalUsage
+	info["docker.cpu.user"] = stats.CPUStats.CPUUsage.UsageInUsermode
+	info["docker.cpu.system"] = stats.CPUStats.CPUUsage.UsageInKernelmode
+	info["docker.cpu.usage"] = stats.CPUStats.CPUUsage.TotalUsage
 	//FIXME in container it will get all CPUStats
-	info["mem.usage"] = stats.MemoryStats.Usage
-	info["mem.max_usage"] = stats.MemoryStats.MaxUsage
-	info["mem.rss"] = stats.MemoryStats.Stats.Rss
+	info["docker.mem.usage"] = stats.MemoryStats.Usage
+	info["docker.mem.max_usage"] = stats.MemoryStats.MaxUsage
+	info["docker.mem.rss"] = stats.MemoryStats.Stats.Rss
 
 	//FIXME use docker api network data.
 	if err := self.getNetStats(info); err != nil {
@@ -132,13 +132,13 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 	second_t := delta.Seconds()
 	for k, d := range info {
 		switch {
-		case strings.HasPrefix(k, "cpu.") && d >= self.Save[k]:
-			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) / nano_t
-		case strings.HasPrefix(k, "disk.") && d >= self.Save[k]:
+		case strings.HasPrefix(k, "docker.cpu.") && d >= self.Save[k]:
+			rate[fmt.Sprintf("%s", k)] = float64(d-self.Save[k]) / nano_t
+		case strings.HasPrefix(k, "docker.disk.") && d >= self.Save[k]:
 			rate[fmt.Sprintf("%s", k)] = float64(d-self.Save[k]) / nano_t
 		case (strings.HasPrefix(k, gset.vlanPrefix) || strings.HasPrefix(k, gset.defaultVlan)) && d >= self.Save[k]:
-			rate[fmt.Sprintf("%s.rate", k)] = float64(d-self.Save[k]) * 8.0 / second_t
-		case strings.HasPrefix(k, "mem"):
+			rate[fmt.Sprintf("docker.%s", k)] = float64(d-self.Save[k]) * 8.0 / second_t
+		case strings.HasPrefix(k, "docker.mem."):
 			rate[k] = float64(d)
 		}
 	}
