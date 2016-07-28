@@ -1,8 +1,12 @@
 package falcon
 
 import (
+	"bytes"
+	"encoding/json"
 	"math"
+	"net/http"
 	"net/rpc"
+	"strings"
 	"sync"
 	"time"
 
@@ -15,8 +19,14 @@ import (
 func CreateFalconClient() *FalconClient {
 	transferAddr := g.Config().Transfer.Addr
 	timeout := time.Duration(g.Config().Transfer.Timeout) * time.Millisecond
+	transfer := true
+
+	if strings.HasPrefix(transferAddr, "http") {
+		transfer = false
+	}
 
 	return &FalconClient{
+		transfer:  transfer,
 		RpcServer: transferAddr,
 		Timeout:   timeout,
 	}
@@ -25,6 +35,7 @@ func CreateFalconClient() *FalconClient {
 type FalconClient struct {
 	sync.Mutex
 	rpcClient *rpc.Client
+	transfer  bool
 	RpcServer string
 	Timeout   time.Duration
 }
@@ -118,8 +129,14 @@ func (self *FalconClient) Send(data map[string]float64, endpoint, tag string, ti
 
 	var resp model.TransferResponse
 	if g.Config().Transfer.Enable {
-		if err := self.call("Transfer.Update", metrics, &resp); err != nil {
-			return err
+		if self.transfer {
+			if err := self.call("Transfer.Update", metrics, &resp); err != nil {
+				return err
+			}
+		} else {
+			if err := PostToAgent(metrics); err != nil {
+				return err
+			}
 		}
 	} else {
 		glog.Infoln("=> <Total=%d> %v\n", len(metrics), metrics[0])
@@ -128,5 +145,46 @@ func (self *FalconClient) Send(data map[string]float64, endpoint, tag string, ti
 	if g.Config().Debug {
 		glog.Infof("%s: %v %v", endpoint, timestamp, &resp)
 	}
+	return nil
+}
+
+//      PostToAgent     ->  http://127.0.0.1:1988/v1/push
+//      Send            ->  127.0.0.1:8433
+func PostToAgent(metrics []*model.MetricValue) error {
+	if len(metrics) == 0 {
+		return nil
+	}
+
+	debug := g.Config().Debug
+
+	if debug {
+		glog.Infof("=> <Total=%d> %v\n", len(metrics), metrics[0])
+	}
+
+	contentJson, err := json.Marshal(metrics)
+	if err != nil {
+		glog.Warningf("Error for PostToAgent json Marshal: %v", err)
+		return err
+	}
+	contentReader := bytes.NewReader(contentJson)
+	req, err := http.NewRequest("POST", g.Config().Transfer.Addr, contentReader)
+	if err != nil {
+		glog.Warningf("Error for PostToAgent in NewRequest: %v", err)
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		glog.Warningf("Error for PostToAgent in http client Do: %v", err)
+		return err
+	}
+	defer resp.Body.Close()
+
+	if debug {
+		glog.Infof("<= %v", resp.Body)
+	}
+
 	return nil
 }
