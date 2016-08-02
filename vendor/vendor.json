@@ -122,5 +122,6 @@
 			"revision": "ba0362eddf11802c0da422d9ef34671051faa10f",
 			"revisionTime": "2015-06-09T07:37:05Z"
 		}
-	]
+	],
+	"rootPath": "github.com/mesos-utility/docker-metrics"
 }
