@@ -5,9 +5,10 @@ import (
 )
 
 const (
-	VERSION     = "0.3.0"
-	IDLEN   int = 12
+	IDLEN int = 12
 )
+
+var VERSION = ""
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())

@@ -28,8 +28,8 @@ RPMBUILD = $(shell				\
 
 ## Make bin for docker-metrics.
 bin:
-	./control build
-	#go build -i -ldflags "-X github.com/mesos-utility/${NAME}/g.Version=${VERSION}" -o ${NAME} .
+	#./control build
+	go build -i -ldflags "-X github.com/mesos-utility/${NAME}/g.VERSION=${VERSION}" -o ${NAME} main.go
 
 ## Get godep and restore dep.
 godep:
