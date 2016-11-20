@@ -5,17 +5,21 @@ HOST_GOLANG_VERSION     = $(go version | cut -d ' ' -f3 | cut -c 3-)
 ALLOWED_GO_VERSION      = $(test '$(/bin/echo -e "$(1)\n$(2)" | sort -V | head -n1)' == '$(1)' && echo 'true')
 
 NAME := docker-metrics
-COMMIT := $(shell git rev-parse HEAD 2> /dev/null || true)
 GITHUB_SRC := github.com/mesos-utility
 CURDIR_LINK := $(CURDIR)/vendor/$(GITHUB_SRC)
 #export GOPATH := $(CURDIR)/vendor
-
+ifneq (,$(wildcard .git/.*))
+    COMMIT = $(shell git rev-parse HEAD 2> /dev/null || true)
+    VERSION	= $(shell git describe --tags --abbrev=0 2> /dev/null || true)
+else
+    COMMIT = "unknown"
+    VERSION = "unknown"
+endif
 
 MKDIR	= mkdir
 INSTALL	= install
 BIN		= $(BUILD_ROOT)
 MAN		= $(BIN)
-VERSION	= $(shell git describe --tags --abbrev=0 2> /dev/null || true)
 RELEASE	= 0
 RPMSOURCEDIR	= $(shell rpm --eval '%_sourcedir')
 RPMSPECDIR	= $(shell rpm --eval '%_specdir')
