@@ -85,7 +85,7 @@ func watcher(serv metric.Metric, cid string, pid int) {
 			go func() {
 				if info, err := serv.UpdateStats(cid, pid); err == nil {
 					if debug {
-						glog.Infof("updatestats: %v", cid)
+						glog.Infof("UpdateStats: %v", cid)
 					}
 					rate := serv.CalcRate(info, now)
 					serv.SaveLast(info)
