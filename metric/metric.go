@@ -10,7 +10,7 @@ import (
 )
 
 func SetGlobalSetting(dclient DockerClient, timeout, force time.Duration, vlanPrefix, defaultVlan string) {
-	gset = Setting{timeout, force, vlanPrefix, defaultVlan, dclient}
+	gset = Setting{timeout, force, dclient}
 }
 
 func CreateMetric(step time.Duration, fclient Remote, tag string, endpoint string) Metric {
@@ -85,16 +85,35 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 
 	//FIXME use docker api network data.
 	var (
-		rx float64 = 0
-		tx float64 = 0
+		rxDropped uint64 = 0
+		rxBytes   uint64 = 0
+		rxErrors  uint64 = 0
+		txPackets uint64 = 0
+		txDropped uint64 = 0
+		rxPackets uint64 = 0
+		txErrors  uint64 = 0
+		txBytes   uint64 = 0
 	)
 
 	for _, v := range stats.Networks {
-		rx += float64(v.RxBytes)
-		tx += float64(v.TxBytes)
+		rxDropped += v.RxDropped
+		rxBytes += v.RxBytes
+		rxErrors += v.RxErrors
+		txPackets += v.TxPackets
+		txDropped += v.TxDropped
+		rxPackets += v.RxPackets
+		txErrors += v.TxErrors
+		txBytes += v.TxBytes
 	}
-	info["net.rx_bytes"] = uint64(rx)
-	info["net.tx_bytes"] = uint64(tx)
+
+	info["net.rx_dropped"] = uint64(rxDropped)
+	info["net.rx_bytes"] = uint64(rxBytes)
+	info["net.rx_errors"] = uint64(rxErrors)
+	info["net.tx_packets"] = uint64(txPackets)
+	info["net.tx_dropped"] = uint64(txDropped)
+	info["net.rx_packets"] = uint64(rxPackets)
+	info["net.tx_errors"] = uint64(txErrors)
+	info["net.tx_bytes"] = uint64(txBytes)
 
 	if err := self.getNetStats(info); err != nil {
 		return info, err
@@ -134,7 +153,6 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 	rate = map[string]float64{}
 	delta := now.Sub(self.Last)
 	nano_t := float64(delta.Nanoseconds())
-	second_t := delta.Seconds()
 	for k, d := range info {
 		switch {
 		case strings.HasPrefix(k, "docker.cpu.usage") && d >= self.Save[k]:
@@ -155,8 +173,6 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 			rate[k] = float64(d-self.Save[k]) / nano_t
 		case strings.HasPrefix(k, "disk.") && d >= self.Save[k]:
 			rate[fmt.Sprintf("docker.%s", k)] = float64(d-self.Save[k]) / nano_t
-		case (strings.HasPrefix(k, gset.vlanPrefix) || strings.HasPrefix(k, gset.defaultVlan)) && d >= self.Save[k]:
-			rate[fmt.Sprintf("docker.%s", k)] = float64(d-self.Save[k]) * 8.0 / second_t
 		case strings.HasPrefix(k, "net."):
 			rate[fmt.Sprintf("docker.%s", k)] = float64(d)
 		case strings.HasPrefix(k, "docker.mem.usage"):

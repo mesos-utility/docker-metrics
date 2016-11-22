@@ -32,11 +32,9 @@ type Metric struct {
 }
 
 type Setting struct {
-	timeout     time.Duration
-	force       time.Duration
-	vlanPrefix  string
-	defaultVlan string
-	dclient     DockerClient
+	timeout time.Duration
+	force   time.Duration
+	dclient DockerClient
 }
 
 var gset Setting
