@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"strings"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
@@ -38,7 +39,7 @@ func initAndStartWatcher() {
 
 	metric.SetGlobalSetting(dclient, 2, 3, "vnbe", "eth0")
 	fclient := falcon.CreateFalconClient()
-	options := docker.ListContainersOptions{All: false}
+	options := docker.ListContainersOptions{All: true}
 
 	if containers, err := dclient.ListContainers(options); err != nil {
 		glog.Errorf("Get container error: %v", err)
@@ -59,10 +60,18 @@ func initAndStartWatcher() {
 		} else {
 			for _, container := range containers {
 				if _, ok := metric.ContainerMetricMap()[container.ID]; ok {
-					continue
+					if strings.Contains(container.Status, "Up ") {
+						continue
+					} else {
+						metric.DeleteContainerMetricMapKey(container.ID)
+					}
 				} else {
-					glog.Infoln("Add ID: ", container.ID[:g.IDLEN])
-					watcher.AddContainerWatched(dclient, container, fclient)
+					if strings.Contains(container.Status, "Up ") {
+						glog.Infoln("Add ID: ", container.ID[:g.IDLEN])
+						watcher.AddContainerWatched(dclient, container, fclient)
+					} else {
+						continue
+					}
 				}
 			}
 		}

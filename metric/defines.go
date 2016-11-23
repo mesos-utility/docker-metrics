@@ -1,7 +1,6 @@
 package metric
 
 import (
-	"os"
 	"time"
 
 	"github.com/fsouza/go-dockerclient"
@@ -21,9 +20,6 @@ type Metric struct {
 	Client   Remote
 	Tag      string
 	Endpoint string
-
-	statNetFile  *os.File
-	statDiskFile *os.File
 
 	Last time.Time
 
