@@ -115,10 +115,6 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	info["net.tx_errors"] = uint64(txErrors)
 	info["net.tx_bytes"] = uint64(txBytes)
 
-	if err := self.getNetStats(info); err != nil {
-		return info, err
-	}
-
 	//FIXME use docker api disk io data.
 	var (
 		blkRead  uint64 = 0
@@ -134,10 +130,6 @@ func (self *Metric) UpdateStats(cid string, pid int) (map[string]uint64, error) 
 	}
 	info["disk.io.read_bytes"] = blkRead
 	info["disk.io.write_bytes"] = blkWrite
-
-	if err := self.getDiskStats(info); err != nil {
-		return info, err
-	}
 
 	return info, nil
 }
