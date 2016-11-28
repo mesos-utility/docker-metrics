@@ -165,8 +165,9 @@ func (self *Metric) CalcRate(info map[string]uint64, now time.Time) (rate map[st
 			rate[k] = float64(d-self.Save[k]) / nano_t
 		case strings.HasPrefix(k, "disk.") && d >= self.Save[k]:
 			rate[fmt.Sprintf("docker.%s", k)] = float64(d-self.Save[k]) / nano_t
-		case strings.HasPrefix(k, "net."):
-			rate[fmt.Sprintf("docker.%s", k)] = float64(d)
+		case strings.HasPrefix(k, "net.") && d >= self.Save[k]:
+			rate[fmt.Sprintf("docker.%s", k)] = float64(d-self.Save[k]) / nano_t
+			//rate[fmt.Sprintf("docker.%s", k)] = float64(d)
 		case strings.HasPrefix(k, "docker.mem.usage"):
 			var memPercent = 0.0
 			if info["memLimit"] != 0 {
