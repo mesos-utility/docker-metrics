@@ -67,7 +67,9 @@ func initAndStartWatcher() {
 					}
 				} else {
 					if strings.Contains(container.Status, "Up ") {
-						glog.Infoln("Add ID: ", container.ID[:g.IDLEN])
+						if g.Config().Debug {
+							glog.Infof("=> Add container: %s", container.ID[:g.IDLEN])
+						}
 						watcher.AddContainerWatched(dclient, container, fclient)
 					} else {
 						continue

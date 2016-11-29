@@ -2,6 +2,9 @@ package metric
 
 import (
 	"sync"
+
+	"github.com/golang/glog"
+	"github.com/mesos-utility/docker-metrics/g"
 )
 
 var (
@@ -30,6 +33,9 @@ func DeleteContainerMetricMapKey(key string) bool {
 		cmlock.Lock()
 		defer cmlock.Unlock()
 
+		if g.Config().Debug {
+			glog.Infof("<= Delete container: %s", key[:g.IDLEN])
+		}
 		delete(idMetricMap, key)
 	}
 
