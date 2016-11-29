@@ -37,7 +37,7 @@ func initAndStartWatcher() {
 		glog.Fatalf("New docker api client error: %v", err)
 	}
 
-	metric.SetGlobalSetting(dclient, 2, 3, "vnbe", "eth0")
+	metric.SetGlobalSetting(dclient, 6, 8)
 	fclient := falcon.CreateFalconClient()
 	options := docker.ListContainersOptions{All: true}
 

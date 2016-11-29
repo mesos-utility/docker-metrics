@@ -9,7 +9,7 @@ import (
 	"github.com/golang/glog"
 )
 
-func SetGlobalSetting(dclient DockerClient, timeout, force time.Duration, vlanPrefix, defaultVlan string) {
+func SetGlobalSetting(dclient DockerClient, timeout, force time.Duration) {
 	gset = Setting{timeout, force, dclient}
 }
 
