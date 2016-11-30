@@ -48,6 +48,12 @@ func getTagFromContainer(ct *docker.Container) (tag string) {
 		}
 	}
 
+	if tag == "" && ct.Node.Name != "" {
+		node := ct.Node.Name
+		name := fmt.Sprintf("%s%s", node, ct.Name)
+		tag = fmt.Sprintf("name=%s", name)
+	}
+
 	if tag == "" {
 		imglen := len(ct.Config.Image)
 
